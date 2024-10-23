@@ -1,0 +1,7 @@
+{
+    "Mean Absolute Error (MAE)": 0.9945603609085083,
+    "Mean Squared Error (MSE)": 2.1120400428771973,
+    "Root Mean Squared Error (RMSE)": 1.4532859325408936,
+    "R2 Score": NaN,
+    "Test Loss": 0.6754381656646729
+}

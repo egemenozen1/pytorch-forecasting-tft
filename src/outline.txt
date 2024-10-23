@@ -1,0 +1,50 @@
+https://archive.ics.uci.edu/dataset/360/air+quality
+
+PyTorch Forecasting Projesi Yol Haritası
+Aşama 1: Ortam Kurulumu ve Proje Başlangıcı (Gün 1-2)
+1.1. Pycharm Kurulumu ve Sanal Ortam Oluşturma
+Pycharm'da yeni bir proje oluştur.
+Sanal ortam (venv) veya conda environment oluştur.
+1.2. Gerekli Kütüphanelerin Yüklenmesi
+pytorch, pytorch-lightning, pytorch-forecasting, pandas, ve matplotlib gibi gereksinim duyulan kütüphaneleri yükle.
+1.3. GitHub Bağlantısı Kurma
+Proje başlangıcında bir GitHub repository'si oluştur ve Pycharm'dan GitHub'a bağlantı kur. Bu şekilde her aşamada projeni GitHub'a aktarabilirsin.
+Aşama 2: Veri Seti Seçimi ve Hazırlık (Gün 3-4)
+2.1. Veri Setini Seçme ve İndirme
+Uygun Veri Setini Belirle: İlgini çeken ve zaman serisi tahmini yapılabilecek bir veri seti seç (örneğin satış tahminleri, enerji tüketimi).
+Kaggle, UCI veya veri.gov gibi platformlardan veri setini indir.
+2.2. Veri Analizi ve Temizleme
+Veri setinin içeriğini analiz et (pandas ile).
+Eksik veya hatalı verileri temizle ve zaman serisi tahmini için hazır hale getir (örneğin, tarih sütunlarını uygun formata çevir).
+Aşama 3: Model Geliştirme ve Eğitme (Gün 5-8)
+3.1. Veri Setini Model için Hazırlama
+Zaman serisi verini PyTorch Forecasting’in TimeSeriesDataSet formatına dönüştür.
+Zaman indeksi, hedef değişken, grup kimliği ve diğer özellikleri belirle.
+3.2. Model Kurulumu
+Model Seçimi: Temporal Fusion Transformer (TFT) veya LSTM tabanlı bir model seç.
+Model Eğitimi: Veriyi modele besle ve modelin eğitilmesini sağla.
+Eğitim sırasında eğitim kaybını (training loss) ve diğer metrikleri takip et.
+3.3. Hiperparametre Ayarlamaları
+Modelin başarımını artırmak için hiperparametrelerle (örneğin öğrenme oranı, epoch sayısı) deneyler yap.
+Aşama 4: Model Değerlendirme ve Tahminler (Gün 9-10)
+4.1. Test Verisi Üzerinde Tahmin Yapma
+Eğitilen modelle test veri seti üzerinde tahminler yap.
+4.2. Performans Değerlendirme ve Görselleştirme
+Modelin tahminlerini ve gerçek değerleri karşılaştır.
+Performansı değerlendirme metrikleriyle ölç (MAE, RMSE gibi).
+Sonuçları grafiksel olarak görselleştir (matplotlib kullanarak).
+Aşama 5: Sonuçların Raporlanması ve GitHub’a Yükleme (Gün 11-12)
+5.1. Sonuç Analizi ve Raporlama
+Modelin güçlü ve zayıf yönlerini analiz et.
+Proje aşamalarını, veri setini ve modelin sonuçlarını anlatan kısa bir rapor hazırla.
+5.2. GitHub'a Yükleme ve Dokümantasyon
+Tüm proje dosyalarını (kodlar, veri seti, görseller) GitHub'a yükle.
+README Dosyası Oluştur: Projeyi açıklayan bir README dosyası yaz.
+Projenin amacı, kullanılan veri seti, model ve elde edilen sonuçları kısa ve net bir şekilde açıkla.
+Aşama 6: Projeyi Tamamlama ve Geri Bildirim (Gün 13-14)
+6.1. Son Kontroller ve Düzenlemeler
+Proje dosyalarını, kod formatını ve GitHub’daki içerikleri gözden geçir.
+6.2. Geri Bildirim ve İyileştirme
+Proje tamamlandıktan sonra geri bildirimler alarak (örneğin benden veya bir mentorundan), projede iyileştirme yapabilecek alanları belirle.
+6.3. Projeyi Portföye Ekleme
+Son halini portföyüne ekle ve LinkedIn gibi platformlarda paylaş.

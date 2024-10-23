@@ -1,0 +1,30 @@
+
+1. Eksik Verilerin Kontrolü ve Doldurulması
+Veride eksik noktalar varsa, bunları doldurun. Eksik verileri doldurmak için ortalama, medyan gibi yöntemler kullanabilirsiniz.
+2. Aykırı Değerleri Kontrol Etme
+Aykırı değerleri (outliers) tespit edin ve bunları ya temizleyin ya da uygun yöntemlerle işleyin. Örneğin, uç değerler model performansını olumsuz etkileyebilir.
+3. Feature Engineering (Özellik Mühendisliği)
+Mevsimsel Bileşenler: Mevsimsel etkiler hava durumu tahminlerinde önemlidir. Ay, gün, hafta gibi mevsimsel özellikler ekleyin.
+Lag Features (Gecikmeli Özellikler): Zaman serisinde önceki günlere ait özellikleri kullanarak yeni gecikmeli (lag) özellikler yaratabilirsiniz. Bu, modelin geçmişle bağlantı kurmasını sağlar.
+4. Dropout ve Aşırı Öğrenme Kontrolü
+Modelde dropout oranını ayarlayarak aşırı öğrenmeyi (overfitting) önleyin. Dropout oranı genellikle %10-30 arasında kullanılır. Dropout kullanarak modelin aşırı karmaşıklaşmasını ve aşırı öğrenme yapmasını engelleyebilirsiniz.
+5. Mevcut Öğrenme Oranını (Learning Rate) Ayarlama
+Öğrenme oranını artırıp/azaltarak modelin daha iyi bir minimuma ulaşmasını sağlayabilirsiniz. Küçük bir öğrenme oranı modelin yavaş ama daha doğru bir şekilde öğrenmesini sağlayabilir.
+6. Veri Setini Zenginleştirme
+Ek Meteorolojik Veriler: Mevcut veri setinize ek meteorolojik veriler ekleyin (örneğin, rüzgar hızı, basınç gibi). Ayrıca coğrafi özellikler veya deniz seviyeleri gibi dışsal özellikleri de dahil edebilirsiniz.
+7. Num_workers ve Veri Yükleme İyileştirmeleri
+DataLoader İyileştirmeleri: Eğitim ve test veri yükleme işlemlerinde num_workers gibi parametreleri optimize edin. Daha fazla çalışan (worker) sayısı, veri yükleme işlemini hızlandırır.
+persistent_workers=True seçeneği ile daha hızlı veri işleme sağlanabilir.
+8. Early Stopping ve Epoch Sayısını Artırma
+Early Stopping ile aşırı öğrenmeyi (overfitting) engelleyebilirsiniz. Ayrıca eğitim epoch sayısını artırıp, modelin yeterince eğitim aldığından emin olabilirsiniz.
+9. Hyperparameter Tuning (Hiperparametre Optimizasyonu)
+Grid Search veya Random Search yöntemleri ile hiperparametreleri optimize ederek modelin performansını artırabilirsiniz.
+Bayesian Optimization gibi daha gelişmiş teknikler de kullanarak öğrenme oranı, dropout, hidden layer boyutları gibi hiperparametreleri sistematik olarak iyileştirebilirsiniz.
+10. Farklı Modelleri Deneme
+LSTM, GRU, Prophet, ARIMA: TFT dışında diğer zaman serisi tahmin modellerini deneyin. Daha basit ya da farklı modeller bazen mevcut modelden daha iyi performans verebilir.
+11. Feature Importance (Özellik Önemini İnceleme)
+Temporal Fusion Transformer gibi modeller, dikkat mekanizmalarıyla hangi özelliklerin daha önemli olduğunu öğrenir. Bu mekanizmayı inceleyerek hangi özelliklerin tahminler için daha önemli olduğunu anlayabilirsiniz.
+12. Gelişmiş Attention Mekanizmaları
+Attention Head Sayısı ve Yapısı: Attention mekanizmalarının sayısını ve yapısını artırarak modelin farklı veri noktalarına daha fazla odaklanmasını sağlayabilirsiniz.
+13. Veri Artırma (Data Augmentation)
+Eğer veri setiniz sınırlıysa, veri artırma teknikleri kullanarak veri setinizi genişletebilirsiniz. Bu, modelin daha iyi genelleştirilmiş sonuçlar vermesine yardımcı olur.
