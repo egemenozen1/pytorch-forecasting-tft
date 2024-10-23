@@ -95,18 +95,41 @@ Ensure you have the following installed:
 
 To set up the project, clone this repository and install the required dependencies:
 
-```bash
+(```bash
 git clone https://github.com/egemenozen1/pytorch-forecasting-tft.git
 cd pytorch-forecasting-tft
-pip install -r requirements.txt
-
+pip install -r requirements.txt)
 
 ## Running the Model
 
 To run the model, you have two main options:
 
-### Executing the Jupyter Notebook:
+### 1. Executing the Jupyter Notebook:
 You can open the main analysis notebook and run the cells step by step for data exploration, training, and evaluation.
 
-```bash
-jupyter notebook notebooks/analysis.ipynb
+(```bash
+jupyter notebook notebooks/analysis.ipynb)
+
+### Running the Model via Pre-trained Weights:
+Alternatively, if you want to quickly test the pre-trained model, you can run the analysis script using the saved model weights.
+
+(```bash
+python src/analysis.py)
+
+## Folder Structure
+
+The project follows a clear and structured format to make navigation easy:
+
+- `data/`: Contains the dataset files used for training and validation, such as `AirQualityUCI.csv`.
+- `notebooks/`: Includes Jupyter notebooks for data exploration, training the model, and result evaluation.
+- `src/`: Python scripts for model development and inference.
+- `README.md`: Project documentation explaining the model, dataset, and how to run the code.
+
+# Conclusion
+
+This project showcases the Temporal Fusion Transformer (TFT) model applied to time series forecasting on environmental data. Although the results show potential, further improvements can be made through feature engineering, hyperparameter tuning, and experimenting with additional datasets.
+
+For any feedback, questions, or collaboration opportunities, feel free to open an issue or contribute by submitting a pull request to improve this project!
+
+
+
