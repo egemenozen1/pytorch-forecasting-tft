@@ -131,7 +131,4 @@ This project showcases the Temporal Fusion Transformer (TFT) model applied to ti
 
 For any feedback, questions, or collaboration opportunities, feel free to open an issue or contribute by submitting a pull request to improve this project!
 
-## License
-This project is licensed under the MIT License. For details, see the [LICENSE](LICENSE) file.
-
 
