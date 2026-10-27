@@ -1,0 +1,43 @@
+{
+  "source_rows": 9357,
+  "timestamp_start": "2004-03-10T18:00:00",
+  "timestamp_end": "2005-04-04T14:00:00",
+  "target": "CO(GT), hourly average concentration in mg/m^3",
+  "missing_target_rows": 1683,
+  "observed_target_rows": 7674,
+  "excluded_feature": "NMHC(GT) (8,443/9,357 timestamped rows missing)",
+  "splits": {
+    "train": {
+      "rows": 6549,
+      "start": "2004-03-10T18:00:00",
+      "end": "2004-12-08T14:00:00",
+      "observed_target_rows": 5066
+    },
+    "validation": {
+      "rows": 1404,
+      "start": "2004-12-08T15:00:00",
+      "end": "2005-02-05T02:00:00",
+      "observed_target_rows": 1234
+    },
+    "test": {
+      "rows": 1404,
+      "start": "2005-02-05T03:00:00",
+      "end": "2005-04-04T14:00:00",
+      "observed_target_rows": 1374
+    }
+  },
+  "train_fitted_imputation_medians": {
+    "co_gt": 1.8,
+    "pt08_s1_co": 1063.0,
+    "c6h6_gt": 9.0,
+    "pt08_s2_nmhc": 938.0,
+    "nox_gt": 139.0,
+    "pt08_s3_nox": 822.0,
+    "no2_gt": 96.0,
+    "pt08_s4_no2": 1560.0,
+    "pt08_s5_o3": 949.0,
+    "temperature_c": 21.2,
+    "relative_humidity": 48.2,
+    "absolute_humidity": 1.1317
+  }
+}

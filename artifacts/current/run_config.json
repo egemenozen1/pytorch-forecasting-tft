@@ -1,0 +1,42 @@
+{
+  "data_path": "data/AirQualityUCI.csv",
+  "output_dir": "artifacts/current",
+  "seed": 42,
+  "train_fraction": 0.7,
+  "validation_fraction": 0.15,
+  "max_encoder_length": 168,
+  "max_prediction_length": 24,
+  "batch_size": 128,
+  "num_workers": 0,
+  "max_epochs": 10,
+  "learning_rate": 0.001,
+  "hidden_size": 16,
+  "attention_head_size": 4,
+  "hidden_continuous_size": 8,
+  "dropout": 0.1,
+  "gradient_clip_val": 0.1,
+  "early_stopping_patience": 3,
+  "quantiles": [
+    0.1,
+    0.5,
+    0.9
+  ],
+  "accelerator": "cpu",
+  "test_fraction": 0.15000000000000005,
+  "versions": {
+    "python": "3.12.7",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scikit_learn": "1.7.2",
+    "torch": "2.8.0+cpu",
+    "lightning": "2.5.5",
+    "pytorch_forecasting": "1.5.0"
+  },
+  "best_checkpoint": "artifacts/current/checkpoints/best.ckpt",
+  "best_validation_loss": 0.6208081245422363,
+  "training": {
+    "epochs_completed": 7,
+    "best_epoch_zero_based": 3,
+    "stopped_early": true
+  }
+}

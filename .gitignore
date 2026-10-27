@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# New experiment logs and large binary checkpoints are reproducible outputs.
+lightning_logs/
+**/lightning_logs/
+artifacts/current/logs/
+artifacts/current/checkpoints/
+artifacts/smoke/
+
+# Local notebook/rendering by-products.
+notebooks/analysis.html

@@ -1,7 +1,10 @@
 
-import pandas as pd
+"""Deprecated compatibility helper for the original filename."""
 
-data = pd.read_csv('../data/AirQualityUCI.csv', sep=';')  # Noktalı virgül ayrımı varsa ona göre ayarlayabilirsin
-print(data.head())
+from air_quality_tft.config import ExperimentConfig
+from air_quality_tft.data import prepare_data
 
-import numpy as np
+
+if __name__ == "__main__":
+    prepared = prepare_data(ExperimentConfig())
+    print(prepared.summary)

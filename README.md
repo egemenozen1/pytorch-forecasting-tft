@@ -1,134 +1,208 @@
-# PyTorch Forecasting with Temporal Fusion Transformer (TFT)
+# Multi-horizon air-quality forecasting with TFT
 
-This repository contains a time series forecasting project utilizing PyTorch Forecasting's Temporal Fusion Transformer (TFT) model. The goal of this project is to predict environmental metrics based on the UCI Air Quality dataset.
+This project forecasts the next 24 hourly carbon-monoxide measurements from the
+previous 168 hours of UCI Air Quality observations. It uses the
+`TemporalFusionTransformer` implementation in
+[PyTorch Forecasting](https://pytorch-forecasting.readthedocs.io/); the TFT
+architecture is not implemented from scratch here.
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Dataset](#dataset)
-- [Model](#model)
-- [Results](#results)
-- [Visualizations](#visualizations)
-- [Planned Improvements](#planned-improvements)
-- [How to Run the Project](#how-to-run-the-project)
-- [Conclusion](#conclusion)
+The repository is designed as a reproducible portfolio experiment: preprocessing,
+training, checkpoint selection, held-out evaluation, machine-readable outputs, and
+the notebook all use the same code path.
 
-## Introduction
-Temporal Fusion Transformer (TFT) is a powerful architecture designed for multi-horizon time series forecasting. This project aims to explore the usage of TFT in predicting various environmental variables, especially the concentration of CO in the air, based on other available features.
+![24-hour-ahead TFT forecasts](artifacts/current/forecast_vs_actual.png)
 
-## Dataset
-The dataset used is the **Air Quality UCI** dataset from UCI's Machine Learning Repository. It contains features such as:
-- `CO_GT`: Ground Truth for CO concentrations (target)
-- `Temperature`
-- `Humidity`
-- `Pressure`
-- `Wind Speed`
-- `NOx Concentration`
-- and several other environmental variables.
+## Verified experiment
 
-### Data Preprocessing
-The data underwent preprocessing steps such as:
-1. Handling missing values.
-2. Feature scaling and transformation.
-3. Train-test split for model validation.
+The committed experiment used seed 42 and stopped after 7 epochs. The checkpoint
+from zero-based epoch 3 had the lowest validation quantile loss (`0.6208`). Test
+data was not used for checkpoint or hyperparameter selection.
 
-Data files included in this repository:
-- **data/AirQualityUCI.csv**: Original dataset in CSV format.
-- **data/AirQualityUCI.xlsx**: Original dataset in Excel format.
+| Held-out test metric | TFT, all 24 horizons | Persistence baseline |
+|---|---:|---:|
+| MAE (mg/m³) | 1.1089 | 1.2028 |
+| RMSE (mg/m³) | 1.3367 | 1.6435 |
+| R² | -0.0284 | -0.5546 |
+| Evaluated forecast points | 32,437 | 32,437 |
 
-## Model
-The **Temporal Fusion Transformer (TFT)** model was employed for time series forecasting. This architecture allows for:
-- Attention mechanisms across time steps.
-- Modeling of both static and time-varying covariates.
-- Multi-horizon predictions.
+The TFT improves MAE by about 7.8% and RMSE by about 18.7% relative to the
+same-origin persistence baseline. That does **not** make the model uniformly
+strong: aggregate R² remains slightly negative. At a 1-hour horizon, R² is
+`0.3173`; at 24 hours it is `-0.0913`. The nominal 80% interval between the
+0.1 and 0.9 quantiles covers only 43.3% of evaluated points, so the interval is
+under-calibrated and should not be presented as reliable uncertainty.
 
-The model is trained using PyTorch Lightning for efficient experiment management and scaling.
+Metrics cover rolling forecasts whose decoder begins in the test period. A test
+timestamp can therefore appear at several horizons. Missing CO labels have zero
+weight and are excluded, leaving 32,437 forecast-origin/horizon pairs over 1,374
+unique observed test timestamps. See
+[`metrics.json`](artifacts/current/metrics.json),
+[`metrics_by_horizon.csv`](artifacts/current/metrics_by_horizon.csv), and
+[`test_predictions.csv`](artifacts/current/test_predictions.csv) for the exact
+scope and values.
 
-### Key Model Hyperparameters:
-- **Learning Rate**: 0.001
-- **Batch Size**: 64
-- **Epochs**: 100
-- **Gradient Clipping**: 0.1
+## Data and leakage controls
 
-The model can be found in the repository under `notebooks/model_results/tft_final_model.pth`.
+The included source files come from the
+[UCI Air Quality dataset](https://archive.ics.uci.edu/dataset/360/air+quality),
+which contains hourly measurements from March 2004 through April 2005. The target
+is `CO(GT)`, the hourly reference-analyzer CO concentration in mg/m³.
 
-## Results
-The model currently yields the following performance metrics:
+- The CSV contains 9,357 valid hourly observations plus 114 empty trailing rows;
+  only the empty rows are removed.
+- UCI's `-200` sentinel is converted to missing. There are 1,683 missing CO
+  targets and 7,674 observed CO targets.
+- The time series is split in order: 6,549 train rows, 1,404 validation rows, and
+  1,404 test rows. The periods do not overlap.
+- Sensor inputs are forward-filled using past values only. Any leading gaps use
+  medians fitted on the training period. `NMHC(GT)` is excluded because 8,443 of
+  9,357 timestamped rows are missing.
+- PyTorch Forecasting fits feature scalers/encoders on the training dataset.
+  Validation and test datasets are created with `TimeSeriesDataSet.from_dataset`
+  so they reuse training-fitted transformations.
+- Calendar cycles and `time_idx` are future-known inputs. Sensor/analyzer readings,
+  meteorological measurements, the target, and observation masks are unknown
+  future inputs and are available only in the encoder.
+- Missing CO values are causally filled so they can serve as historical context,
+  but `target_weight=0` removes them from quantile loss and reported metrics.
+- No timestamped row is deleted through IQR or other outlier filtering.
 
-### Metrics:
-- **Mean Absolute Error (MAE)**: 0.9946
-- **Mean Squared Error (MSE)**: 2.1120
-- **Root Mean Squared Error (RMSE)**: 1.4533
-- **R² Score**: Not yet ideal (requires further tuning).
+The exact split dates and train-fitted medians are recorded in
+[`data_summary.json`](artifacts/current/data_summary.json).
 
-These metrics indicate that there is room for improvement, especially in model tuning and additional feature engineering.
+## Model configuration
 
-## Visualizations
-The following visualizations provide insights into the model's performance:
+| Setting | Value |
+|---|---:|
+| Encoder history | 168 hours |
+| Forecast horizon | 24 hours |
+| Quantiles | 0.1, 0.5, 0.9 |
+| Hidden size | 16 |
+| Attention heads | 4 |
+| Hidden continuous size | 8 |
+| Dropout | 0.10 |
+| Learning rate | 0.001 |
+| Batch size | 128 |
+| Maximum epochs / early-stop patience | 10 / 3 |
 
-### Predictions vs Actual Values:
-![Predictions vs Actual](notebooks/model_results/scatter_predictions_vs_actual.png)
+Point metrics use the median (`p50`) forecast. Checkpoint selection monitors
+validation loss only. [`run_config.json`](artifacts/current/run_config.json)
+records the tested package versions and full experiment configuration.
 
-This scatter plot compares the predicted CO concentrations against the actual values in the test set.
+## Install and run
 
-### Residuals Histogram:
-![Residuals Histogram](notebooks/model_results/residuals_histogram.png)
+Python 3.11 or 3.12 is required. Commands below are run from the repository root.
 
-The residuals histogram helps visualize the distribution of prediction errors.
-
-## Planned Improvements
-Here are the next steps to further enhance the model’s accuracy:
-1. **Hyperparameter Tuning**: Adjust learning rates, batch sizes, and dropout values.
-2. **Experiment with Different Models**: Explore models like LSTMs, GRUs, or other Transformer-based architectures.
-3. **Feature Engineering**: Introduce more relevant lag features and interactions between covariates.
-4. **More Data**: Incorporate additional datasets to increase the robustness of predictions.
-
-## How to Run the Project
-
-### Prerequisites
-Ensure you have the following installed:
-- Python 3.7+
-- PyTorch
-- PyTorch Forecasting
-- PyTorch Lightning
-
-## Installation
-
-To set up the project, clone this repository and install the required dependencies:
-
-(```bash
+```bash
 git clone https://github.com/egemenozen1/pytorch-forecasting-tft.git
 cd pytorch-forecasting-tft
-pip install -r requirements.txt)
+python -m venv .venv
+```
 
-## Running the Model
+Activate the environment on Windows PowerShell:
 
-To run the model, you have two main options:
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
-### 1. Executing the Jupyter Notebook:
-You can open the main analysis notebook and run the cells step by step for data exploration, training, and evaluation.
+Or on macOS/Linux:
 
-(```bash
-jupyter notebook notebooks/analysis.ipynb)
+```bash
+source .venv/bin/activate
+```
 
-### Running the Model via Pre-trained Weights:
-Alternatively, if you want to quickly test the pre-trained model, you can run the analysis script using the saved model weights.
+Install the tested dependencies and this package:
 
-(```bash
-python src/analysis.py)
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pip install -e .
+```
 
-## Folder Structure
+Validate the source data and run tests:
 
-The project follows a clear and structured format to make navigation easy:
+```bash
+python -m air_quality_tft.cli data-summary
+python -m pytest
+```
 
-- `data/`: Contains the dataset files used for training and validation, such as `AirQualityUCI.csv`.
-- `notebooks/`: Includes Jupyter notebooks for data exploration, training the model, and result evaluation.
-- `src/`: Python scripts for model development and inference.
-- `README.md`: Project documentation explaining the model, dataset, and how to run the code.
+Train, select the best validation checkpoint, and evaluate once on test:
 
-# Conclusion
+```bash
+python -m air_quality_tft.cli train
+```
 
-This project showcases the Temporal Fusion Transformer (TFT) model applied to time series forecasting on environmental data. Although the results show potential, further improvements can be made through feature engineering, hyperparameter tuning, and experimenting with additional datasets.
+Evaluate an existing compatible Lightning checkpoint with its saved settings:
 
-For any feedback, questions, or collaboration opportunities, feel free to open an issue or contribute by submitting a pull request to improve this project!
+```bash
+python -m air_quality_tft.cli evaluate \
+  --config artifacts/current/run_config.json \
+  --checkpoint artifacts/current/checkpoints/best.ckpt
+```
+
+The checkpoint directory is intentionally git-ignored because it is reproducible
+and binary. A fresh training run creates it locally.
+
+### Notebook
+
+The executed notebook is [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb).
+It runs top-to-bottom as a compact analysis report using the verified artifacts.
+Set `RUN_TRAINING = True` in its optional training cell to retrain from the same
+pipeline.
+
+```bash
+python -m nbconvert --execute --to notebook --inplace notebooks/analysis.ipynb
+```
+
+## Outputs
+
+| Path | Purpose |
+|---|---|
+| `artifacts/current/metrics.json` | Aggregate, baseline, and selected-horizon metrics |
+| `artifacts/current/metrics_by_horizon.csv` | Metrics for each 1–24 hour horizon |
+| `artifacts/current/test_predictions.csv` | Forecast origin, horizon, target, weights, and quantiles |
+| `artifacts/current/forecast_vs_actual.png` | One week of 24-hour-ahead forecasts |
+| `artifacts/current/run_config.json` | Seed, model/data settings, versions, and training record |
+| `artifacts/current/data_summary.json` | Source coverage, split periods, and fitted medians |
+| `artifacts/current/checkpoints/best.ckpt` | Local best-validation checkpoint; git-ignored |
+
+## Legacy artifacts and repository size
+
+The original experiment files are retained rather than silently deleted. They are
+not current results:
+
+- `notebooks/model_results/*.pth` are raw state dictionaries. They use different
+  features, hidden dimensions, and seven output quantiles, and do not include a
+  complete preprocessing configuration.
+- old metric JSON files contain non-standard `NaN` R² values, while their
+  prediction CSV files contain only one or two rows;
+- 386 tracked Lightning log files occupy about 96 MB, including 72 distinct
+  checkpoints. They have no exact duplicate checkpoint hashes, but they are
+  historical experiment output rather than required runtime inputs.
+
+See [`LEGACY_RESULTS.md`](notebooks/model_results/LEGACY_RESULTS.md). Future logs
+and checkpoints are ignored. Removing the already tracked history would be a
+separate repository-cleanup decision because it changes provenance and Git size.
+
+## Limitations
+
+- This is one monitoring site and roughly thirteen months of data; it does not
+  establish geographic or long-term generalization.
+- Overlapping rolling windows make the aggregate metric a forecast-point metric,
+  not a count of independent timestamps. Per-horizon results are provided.
+- Negative aggregate R² and weak interval coverage show substantial remaining
+  model/calibration limitations.
+- The repository is a reproducible experiment, not a production air-quality
+  warning system.
+
+## Attribution and licensing
+
+Dataset citation: Vito, S. (2008). *Air Quality* [Dataset]. UCI Machine Learning
+Repository. <https://doi.org/10.24432/C59K5F>. UCI lists the dataset under
+CC BY 4.0. PyTorch Forecasting is MIT-licensed. Details are in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+This repository did not previously declare a source-code license. The dataset's
+license does not license the project code; the repository owner should choose a
+code license before inviting reuse.
 
 

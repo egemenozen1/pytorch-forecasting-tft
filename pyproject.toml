@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uci-air-quality-tft"
+version = "1.0.0"
+description = "Leakage-aware multi-horizon CO forecasting with PyTorch Forecasting TFT"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "lightning==2.5.5",
+  "matplotlib==3.10.7",
+  "numpy==2.2.6",
+  "pandas==2.3.3",
+  "pytorch-forecasting==1.5.0",
+  "scikit-learn==1.7.2",
+  "tensorboard==2.20.0",
+  "torch==2.8.0",
+]
+
+[project.scripts]
+air-quality-tft = "air_quality_tft.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

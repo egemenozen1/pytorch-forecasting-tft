@@ -1,0 +1,45 @@
+{
+  "scope": "Rolling 24-hour forecasts whose first target is in the held-out test period; metrics use only finite CO observations with target_weight=1.",
+  "point_forecast": "0.5 quantile (median)",
+  "tft": {
+    "mae": 1.108946445985159,
+    "rmse": 1.3367073670424843,
+    "r2": -0.0283827046396119,
+    "evaluated_forecast_points": 32437,
+    "unique_test_timestamps": 1374,
+    "excluded_missing_target_points": 707,
+    "p10_p90_coverage": 0.4327773838517742,
+    "mean_p10_p90_width": 2.285430545389687
+  },
+  "persistence_baseline": {
+    "mae": 1.2027653604694413,
+    "rmse": 1.6435024444112811,
+    "r2": -0.5546147701834565,
+    "evaluated_forecast_points": 32437,
+    "unique_test_timestamps": 1374,
+    "excluded_missing_target_points": 707
+  },
+  "selected_horizons": {
+    "1_hour": {
+      "mae": 0.876557819390967,
+      "rmse": 1.0883156977632134,
+      "r2": 0.3172955115612216,
+      "evaluated_forecast_points": 1352,
+      "unique_test_timestamps": 1352,
+      "excluded_missing_target_points": 29,
+      "p10_p90_coverage": 0.48298816568047337,
+      "mean_p10_p90_width": 2.2771732087230543
+    },
+    "24_hour": {
+      "mae": 1.1480895317015518,
+      "rmse": 1.3802995745373603,
+      "r2": -0.09128097197176377,
+      "evaluated_forecast_points": 1351,
+      "unique_test_timestamps": 1351,
+      "excluded_missing_target_points": 30,
+      "p10_p90_coverage": 0.4204293116210215,
+      "mean_p10_p90_width": 2.2636777548151135
+    }
+  },
+  "per_horizon_file": "artifacts/current/metrics_by_horizon.csv"
+}
